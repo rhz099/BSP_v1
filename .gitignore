@@ -1,0 +1,28 @@
+# Ignore IDE and configuration directories
+.vscode/
+
+# Python cache files and folders
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Python virtual environment
+venv/
+.env/
+
+# Runtime and unnecessary artifacts
+epoch_counter.txt
+
+# Jupyter notebook checkpoints
+.ipynb_checkpoints
+
+# OS files
+.DS_Store
+
+# Model checkpoints
+models/**/*.pth
+
+# Logs or temporary outputs if any
+logs/
+temp/
