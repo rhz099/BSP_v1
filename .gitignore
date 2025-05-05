@@ -21,7 +21,7 @@ epoch_counter.txt
 .DS_Store
 
 # Model checkpoints
-models/**/*.pth
+models/
 
 # Logs or temporary outputs if any
 logs/
