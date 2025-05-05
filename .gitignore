@@ -26,3 +26,6 @@ models/**/*.pth
 # Logs or temporary outputs if any
 logs/
 temp/
+
+# elliptic dataset - too large
+elliptic_bitcoin_dataset/
