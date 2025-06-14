@@ -1,6 +1,7 @@
+# src/model_sage.py
+
 import torch
 import torch.nn.functional as F
-from torch.nn import Linear
 from torch_geometric.nn import SAGEConv
 
 class GraphSAGENet(torch.nn.Module):

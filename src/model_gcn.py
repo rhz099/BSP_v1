@@ -1,7 +1,6 @@
 # src/model_gcn.py
 import torch
 import torch.nn.functional as F
-from torch.nn import Linear
 from torch_geometric.nn import GCNConv
 
 class GCNNet(torch.nn.Module):

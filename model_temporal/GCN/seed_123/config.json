@@ -1,0 +1,9 @@
+{
+    "model": "GCN",
+    "split": "temporal",
+    "seed": 123,
+    "hidden_channels": 64,
+    "dropout": 0.3,
+    "lr": 0.001,
+    "weight_decay": 0.0005
+}
