@@ -1,0 +1,18 @@
+{
+    "model": "GAT",
+    "ablation_name": "base+structural",
+    "feature_flags": {
+        "include_base": true,
+        "include_structural": true,
+        "include_temporal_legacy": false,
+        "include_temporal_context": false,
+        "include_typology": false
+    },
+    "feature_dim": 169,
+    "dropout": 0.1,
+    "num_epochs": 300,
+    "patience": 30,
+    "lr": 0.001,
+    "weight_decay": 0.0005,
+    "seed": 777
+}

@@ -6,7 +6,6 @@ import os
 import json
 from data_utils_randomsplit import random_split
 from train_utils import set_seed, train_full, save_config
-from evaluation_randomsplit import compute_metrics
 from model_gat import GATNet
 from model_gcn import GCNNet
 from model_sage import GraphSAGENet
@@ -85,24 +84,4 @@ def train_and_evaluate_multiseed(seed, data, model_type="GAT", test_size=0.3):
 
     save_full_experiment(model, logs_dict, val_idx, config_dict, model_type.upper(), seed)
 
-    # Evaluation after training
-    model.eval()
-    out = model(data.x, data.edge_index)
-    preds = out[val_idx].argmax(dim=1).cpu()
-    probs = torch.exp(out[val_idx])[:, 1].detach().cpu()
-    y_true = data.y[val_idx].cpu()
 
-    metrics = compute_metrics(y_true, preds, probs)
-
-    print(f"\n=== Evaluation Metrics for Seed {seed} ===")
-    for k, v in metrics.items():
-        if k != 'conf_matrix':
-            print(f"{k:<20}: {v:.4f}")
-
-    print("\nConfusion Matrix:")
-    conf_df = pd.DataFrame(
-        metrics['conf_matrix'],
-        index=["True Legit (0)", "True Illicit (1)"],
-        columns=["Pred Legit (0)", "Pred Illicit (1)"]
-    )
-    print(conf_df)

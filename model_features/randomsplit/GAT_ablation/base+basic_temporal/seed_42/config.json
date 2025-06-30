@@ -1,0 +1,20 @@
+{
+    "model": "GAT",
+    "ablation_name": "base+basic_temporal",
+    "feature_flags": {
+        "include_base": true,
+        "include_structural": false,
+        "include_typology": false,
+        "include_temporal": true
+    },
+    "feature_dim": 168,
+    "dropout": 0.1,
+    "num_epochs": 300,
+    "patience": 30,
+    "lr": 0.001,
+    "weight_decay": 0.0005,
+    "seed": 42,
+    "hidden_channels": 8,
+    "heads": 8,
+    "out_channels": 2
+}

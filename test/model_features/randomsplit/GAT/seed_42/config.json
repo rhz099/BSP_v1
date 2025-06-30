@@ -1,0 +1,16 @@
+{
+    "model": "GAT",
+    "feature_flags": {
+        "base": true,
+        "structural": true,
+        "temporal": true,
+        "typology": true
+    },
+    "feature_dim": 172,
+    "dropout": 0.1,
+    "num_epochs": 300,
+    "patience": 30,
+    "lr": 0.001,
+    "weight_decay": 0.0005,
+    "seed": 42
+}

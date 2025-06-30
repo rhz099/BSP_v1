@@ -8,23 +8,47 @@ import seaborn as sns
 from sklearn.metrics import classification_report, confusion_matrix
 
 from analysis_utils import (
-    evaluate_model_from_checkpoint,
     compute_prediction_metrics,
     load_metrics_across_seeds,
     aggregate_metrics_table,
     plot_loss_curve
 )
 
+from features.feature_utils import evaluate_model_from_checkpoint
 
-def run_inference_all_seeds(model_dir, model_class, data, seeds):
+def run_inference_all_seeds(model_dir, model_class, data_dir, seeds):
+    """
+    Runs inference across multiple seeds using per-seed saved `data_exp.pt` files.
+
+    Args:
+        model_dir (str): Path to directory containing seed folders with model checkpoints.
+        model_class (nn.Module): The model class to instantiate (e.g., GATNet).
+        data_dir (str): Path to directory with seed-wise preprocessed data (e.g., ../data/GAT_randomsplit/base).
+        seeds (List[int]): List of seed integers used in training.
+
+    Returns:
+        y_true_all, y_pred_all, y_proba_all, seed_metrics
+    """
     y_true_all, y_pred_all, y_proba_all, seed_metrics = [], [], [], []
 
     for seed in seeds:
-        base = os.path.join(model_dir, f"seed_{seed}")
-        val_idx = np.load(os.path.join(base, "val_idx.npy"))
-        config = json.load(open(os.path.join(base, "config.json")))
-        model_path = os.path.join(base, "model.pth")
+        seed_name = f"seed_{seed}"
+        model_path = os.path.join(model_dir, seed_name, "model.pth")
+        val_idx_path = os.path.join(model_dir, seed_name, "val_idx.npy")
+        config_path = os.path.join(model_dir, seed_name, "config.json")
+        data_path = os.path.join(data_dir, seed_name, "data_exp.pt")
 
+        # Check file existence
+        if not all(os.path.exists(p) for p in [model_path, val_idx_path, config_path, data_path]):
+            print(f"[!] Missing files for seed {seed}, skipping.")
+            continue
+
+        # Load all relevant components
+        val_idx = np.load(val_idx_path)
+        config = json.load(open(config_path))
+        data = torch.load(data_path, map_location="cpu", weights_only=False)
+
+        # Inference
         y_true, y_pred, y_proba = evaluate_model_from_checkpoint(
             model_class=model_class,
             model_path=model_path,
@@ -39,7 +63,6 @@ def run_inference_all_seeds(model_dir, model_class, data, seeds):
         seed_metrics.append(compute_prediction_metrics(y_true, y_pred, y_proba))
 
     return y_true_all, y_pred_all, y_proba_all, seed_metrics
-
 
 def plot_conf_matrices(y_true_all, y_pred_all, seeds, model_name):
     conf_matrices = [

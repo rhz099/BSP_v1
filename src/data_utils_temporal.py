@@ -6,11 +6,21 @@ import torch
 from torch_geometric.data import Data
 from torch_geometric.utils import to_undirected, degree
 from sklearn.preprocessing import StandardScaler
+from normalization import normalize_base_features_only
 
-def load_and_preprocess_elliptic_temporal(data_dir: str = "../elliptic_bitcoin_dataset"):
+
+def load_and_preprocess_elliptic_temporal(data_dir: str = "../elliptic_bitcoin_dataset", normalize=True):
     """
     Loads and preprocesses Elliptic dataset with time-aware splitting.
     Returns PyG Data object and node time mapping.
+
+    Args:
+        data_dir (str): Path to CSVs
+        normalize (bool): Whether to normalize only base features (default: True)
+
+    Returns:
+        data (torch_geometric.data.Data)
+        node_times (torch.Tensor): [num_nodes] time step values per node
     """
     # --- Load raw CSVs ---
     classes_df = pd.read_csv(f"{data_dir}/elliptic_txs_classes.csv")
@@ -42,9 +52,9 @@ def load_and_preprocess_elliptic_temporal(data_dir: str = "../elliptic_bitcoin_d
         feats = list(row)[1:-1]
         x[node_idx] = torch.tensor(feats, dtype=torch.float)
 
-    # Normalize features
-    scaler = StandardScaler()
-    x = torch.tensor(scaler.fit_transform(x), dtype=torch.float)
+    # Optional normalization
+    if normalize:
+        x = normalize_base_features_only(x, num_base_features=166)
 
     # Build edge index
     edge_index = torch.stack([
@@ -68,12 +78,12 @@ def load_and_preprocess_elliptic_temporal(data_dir: str = "../elliptic_bitcoin_d
         node_idx = txid2idx[txid]
         node_times[node_idx] = int(time)
 
-    # Filter isolated nodes (academic standard)
+    # Filter isolated nodes
     data = Data(x=x, edge_index=edge_index, y=y)
     data = filter_isolated_nodes(data)
 
-    # Return both data object and time step tensor
     return data, node_times
+
 
 def filter_isolated_nodes(data: Data):
     edge_index = to_undirected(data.edge_index)

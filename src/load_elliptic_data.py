@@ -6,9 +6,10 @@ import torch
 from torch_geometric.data import Data
 from torch_geometric.utils import to_undirected, degree
 from sklearn.preprocessing import StandardScaler
+from normalization import normalize_base_features_only
 
 
-def load_and_preprocess_elliptic_data(data_dir: str = "../elliptic_bitcoin_dataset") -> Data:
+def load_and_preprocess_elliptic_data(data_dir: str = "../elliptic_bitcoin_dataset", normalize=True) -> Data:
     """
     Loads and processes the Elliptic dataset into a PyTorch Geometric Data object.
 
@@ -65,8 +66,8 @@ def load_and_preprocess_elliptic_data(data_dir: str = "../elliptic_bitcoin_datas
     data = Data(x=x, edge_index=edge_index, y=y)
 
     # Normalize features
-    scaler = StandardScaler()
-    data.x = torch.tensor(scaler.fit_transform(data.x), dtype=torch.float)
+    if normalize:
+        data.x = normalize_base_features_only(data.x, num_base_features=166)
 
     # Remove isolated nodes
     return filter_isolated_nodes(data)

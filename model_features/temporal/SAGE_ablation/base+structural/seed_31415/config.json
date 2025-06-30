@@ -1,0 +1,20 @@
+{
+    "model": "SAGE",
+    "ablation_name": "base+structural",
+    "feature_flags": {
+        "include_base": true,
+        "include_structural": true,
+        "include_typology": false,
+        "include_temporal": false
+    },
+    "feature_dim": 170,
+    "dropout": 0.1,
+    "num_epochs": 300,
+    "patience": 30,
+    "lr": 0.001,
+    "weight_decay": 0.0005,
+    "class_weights": null,
+    "seed": 31415,
+    "hidden_channels": 64,
+    "out_channels": 2
+}

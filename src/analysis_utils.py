@@ -205,3 +205,64 @@ def analyze_fp_fn_errors(y_true, y_pred, node_metadata=None):
         results["fp_details"] = node_metadata.iloc[fp_idx]
         results["fn_details"] = node_metadata.iloc[fn_idx]
     return results
+
+# ===============================
+# 8. turn results into csv
+# ===============================
+import csv
+
+def log_metrics_to_csv(
+    model_name: str,
+    split_name: str,
+    ablation: str,
+    seeds: list,
+    val_acc_list: list,
+    seed_metrics: list,
+    is_feature: bool = False,
+    results_dir: str = "../results"
+):
+    """
+    Appends evaluation metrics to a CSV under results/.
+
+    Args:
+        model_name (str): e.g., "GAT-Random"
+        split_name (str): e.g., "randomsplit"
+        ablation (str): e.g., "base+temporal"
+        seeds (List[int])
+        val_acc_list (List[float])
+        seed_metrics (List[Dict])
+        is_feature (bool): whether to append '_feature' to the filename
+        results_dir (str): base directory for saving results
+    """
+    os.makedirs(results_dir, exist_ok=True)
+    suffix = "_metrics_feature.csv" if is_feature else "_metrics.csv"
+    csv_path = os.path.join(results_dir, f"{model_name}{suffix}")
+
+    header = [
+        "model", "split", "ablation", "seed",
+        "val_acc", "bal_acc", "f1_macro", "f1_illicit",
+        "precision_illicit", "recall_illicit", "mcc"
+    ]
+
+    file_exists = os.path.exists(csv_path)
+
+    with open(csv_path, "a", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=header)
+        if not file_exists:
+            writer.writeheader()
+
+        for i, seed in enumerate(seeds):
+            m = seed_metrics[i]
+            writer.writerow({
+                "model": model_name,
+                "split": split_name,
+                "ablation": ablation,
+                "seed": seed,
+                "val_acc": round(val_acc_list[i], 4),
+                "bal_acc": round(m["bal_acc"], 4),
+                "f1_macro": round(m["f1_macro"], 4),
+                "f1_illicit": round(m["f1_illicit"], 4),
+                "precision_illicit": round(m["precision_illicit"], 4),
+                "recall_illicit": round(m["recall_illicit"], 4),
+                "mcc": round(m["mcc"], 4)
+            })

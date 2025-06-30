@@ -29,3 +29,4 @@ temp/
 
 # elliptic dataset - too large
 elliptic_bitcoin_dataset/
+data/
